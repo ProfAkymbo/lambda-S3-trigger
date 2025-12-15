@@ -53,3 +53,11 @@ You should see log entries showing the file name and size.
 ![CloudWatch Logs showing file name and size logging](c.PNG)
 
 ---
+
+## References
+
+* [AWS Lambda Developer Guide: Using AWS Lambda with Amazon S3](https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html)
+* [AWS CloudFormation User Guide](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+* [Amazon S3 Event Notifications](https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html)
+
+---
