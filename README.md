@@ -50,7 +50,6 @@ You should see log entries showing the file name and size.
 
 ## Screenshot
 
-![CloudWatch Logs showing file name and size logging](lambda-S3-trigger
-/c.PNG)
+![CloudWatch Logs showing file name and size logging](c.PNG)
 
 ---
