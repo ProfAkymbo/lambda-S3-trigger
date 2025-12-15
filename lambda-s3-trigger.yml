@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 PUT event triggers Lambda to log file name and size
+
+Resources:
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  S3LoggingLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: S3FileLogger
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              if not event or 'Records' not in event:
+                  print("No S3 event received")
+                  return
+
+              for record in event['Records']:
+                  bucket = record['s3']['bucket']['name']
+                  key = record['s3']['object']['key']
+                  size = record['s3']['object']['size']
+
+                  print(f"Bucket: {bucket}")
+                  print(f"File name: {key}")
+                  print(f"File size: {size} bytes")
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref S3LoggingLambda
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+
+  UploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:Put
+            Function: !GetAtt S3LoggingLambda.Arn
+
+Outputs:
+  BucketName:
+    Description: S3 bucket name
+    Value: !Ref UploadBucket
+
+  LambdaName:
+    Description: Lambda function name
+    Value: !Ref S3LoggingLambda
